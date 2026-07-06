@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AiGatewayAPI",
+  "description": "On-demand client summaries and conversational fitness chat contracts.",
+  "endpoints": {
+    "/api/ai/brief": {
+      "POST": {
+        "description": "Generate an AI summary brief of today's workouts and nutrition logs.",
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "timezone": { "type": "string" },
+            "client_id": { "type": "string", "format": "uuid" }
+          },
+          "required": ["timezone"]
+        },
+        "responses": {
+          "200": {
+            "type": "object",
+            "properties": {
+              "brief": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/chat": {
+      "POST": {
+        "description": "Engage in context-grounded conversational chat regarding historical logs.",
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "message": { "type": "string" },
+            "timezone": { "type": "string" }
+          },
+          "required": ["message", "timezone"]
+        },
+        "responses": {
+          "200": {
+            "type": "object",
+            "properties": {
+              "response": { "type": "string" },
+              "contextUsed": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

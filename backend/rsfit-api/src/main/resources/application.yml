@@ -15,7 +15,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:mock-key-for-local}
+    vertex:
+      ai:
+        gemini:
+          project-id: ${SPRING_AI_VERTEX_PROJECT_ID:rsfit-app}
+          location: ${SPRING_AI_VERTEX_LOCATION:us-central1}
+          api-key: ${SPRING_AI_VERTEX_AI_GEMINI_API_KEY:}
+          model: gemini-pro
 server:
   port: 8080

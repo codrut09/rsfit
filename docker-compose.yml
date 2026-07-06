@@ -29,7 +29,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/rsfit
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=secret
-      - SPRING_AI_VERTEX_AI_GEMINI_API_KEY=${SPRING_AI_VERTEX_AI_GEMINI_API_KEY:}
+      - SPRING_AI_VERTEX_AI_GEMINI_API_KEY=${SPRING_AI_VERTEX_AI_GEMINI_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy

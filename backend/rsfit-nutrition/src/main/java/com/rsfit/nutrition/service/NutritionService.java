@@ -1,5 +1,6 @@
 package com.rsfit.nutrition.service;
 
+import com.rsfit.nutrition.entity.NutritionLog;
 import com.rsfit.nutrition.entity.NutritionTarget;
 import com.rsfit.nutrition.repository.NutritionLogRepository;
 import com.rsfit.nutrition.repository.NutritionTargetRepository;

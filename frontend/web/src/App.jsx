@@ -31,11 +31,6 @@ export default function App() {
       const newToken = response.data.token;
       const userRole = response.data.role;
 
-      if (userRole !== 'COACH') {
-        alert('Access denied: Coach account required for Web Console');
-        return;
-      }
-
       localStorage.setItem('token', newToken);
       localStorage.setItem('username', email);
       setToken(newToken);

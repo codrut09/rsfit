@@ -1,6 +1,7 @@
 package com.rsfit.api.controller;
 
 import com.rsfit.auth.entity.User;
+import com.rsfit.auth.repository.UserRepository;
 import com.rsfit.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, String> request) {
@@ -51,6 +55,10 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
         response.put("tokenType", "Bearer");
+
+        // Fetch user from DB to include role in response
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        response.put("role", user.getRole().name());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

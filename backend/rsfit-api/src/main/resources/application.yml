@@ -21,6 +21,8 @@ spring:
           project-id: ${SPRING_AI_VERTEX_PROJECT_ID:rsfit-app}
           location: ${SPRING_AI_VERTEX_LOCATION:us-central1}
           api-key: ${SPRING_AI_VERTEX_AI_GEMINI_API_KEY:}
-          model: gemini-pro
+          chat:
+            options:
+              model: gemini-pro
 server:
   port: 8080

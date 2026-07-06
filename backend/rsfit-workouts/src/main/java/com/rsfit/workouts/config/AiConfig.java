@@ -14,6 +14,7 @@ import java.util.List;
 public class AiConfig {
 
     @Bean
+    @org.springframework.context.annotation.Primary
     @ConditionalOnProperty(name = "spring.ai.vertex.ai.gemini.api-key", matchIfMissing = true, havingValue = "")
     public ChatClient mockChatClient() {
         return new ChatClient() {

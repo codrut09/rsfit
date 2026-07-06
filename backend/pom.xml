@@ -20,6 +20,7 @@
         <module>rsfit-auth</module>
         <module>rsfit-coaching</module>
         <module>rsfit-workouts</module>
+        <module>rsfit-nutrition</module>
         <module>rsfit-api</module>
     </modules>
 
@@ -43,6 +44,11 @@
             <dependency>
                 <groupId>com.rsfit</groupId>
                 <artifactId>rsfit-workouts</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rsfit</groupId>
+                <artifactId>rsfit-nutrition</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

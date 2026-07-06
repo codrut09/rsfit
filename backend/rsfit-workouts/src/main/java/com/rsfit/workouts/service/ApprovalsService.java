@@ -67,6 +67,8 @@ public class ApprovalsService {
 
             if (rec.getLogId() != null) {
                 applyLogModification(rec.getLogId(), rec.getProposedChanges());
+            } else {
+                applyGeneralModifications(rec.getClientId(), rec.getProposedChanges());
             }
         } else if ("REJECT".equalsIgnoreCase(action)) {
             rec.setStatus("REJECTED");
@@ -75,6 +77,29 @@ public class ApprovalsService {
         }
 
         return recommendationRepository.save(rec);
+    }
+
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
+    private void applyGeneralModifications(UUID clientId, String proposedChangesJson) {
+        try {
+            Map<String, Object> changes = objectMapper.readValue(proposedChangesJson, Map.class);
+            String action = (String) changes.get("action");
+
+            if ("ADJUST_NUTRITION_TARGETS".equalsIgnoreCase(action)) {
+                Integer calories = (Integer) changes.get("targetCalories");
+                Integer protein = (Integer) changes.get("targetProtein");
+                Integer carbs = (Integer) changes.get("targetCarbs");
+                Integer fat = (Integer) changes.get("targetFat");
+
+                jdbcTemplate.update("UPDATE nutrition_targets SET is_active = false WHERE client_id = ?", clientId);
+                jdbcTemplate.update("INSERT INTO nutrition_targets (id, client_id, target_calories, target_protein, target_carbs, target_fat, is_active, created_at) VALUES (gen_random_uuid(), ?, ?, ?, ?, ?, true, CURRENT_TIMESTAMP)",
+                        clientId, calories, protein, carbs, fat);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to apply target modifications", e);
+        }
     }
 
     private void applyLogModification(UUID logId, String proposedChangesJson) {

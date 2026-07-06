@@ -9,6 +9,7 @@ This repository contains the source code for the RSFit platform, designed as a m
   * `rsfit-auth`: Manages user credentials (BCrypt), roles, and stateless JWT token exchanges.
   * `rsfit-coaching`: Tracks relationships, invite status, and multi-coach access gates.
   * `rsfit-workouts`: Manages workout logs, exercises, sets, and the retroactive Approvals Hub.
+  * `rsfit-nutrition`: Tracks daily food intake log entries and stages daily goals target approvals.
 * **[frontend/mobile/](file:///Users/livadarucodrut/Documents/Projects/rsfit/frontend/mobile)**: React Native mobile client for tracking workouts on the gym floor.
 * **[frontend/web/](file:///Users/livadarucodrut/Documents/Projects/rsfit/frontend/web)**: Vite React web client for coaches to review client rosters.
 

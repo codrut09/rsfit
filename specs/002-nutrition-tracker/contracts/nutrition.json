@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NutritionAPI",
+  "description": "Food logging, daily macronutrient aggregations, and daily target adjustment contracts.",
+  "endpoints": {
+    "/api/nutrition/logs": {
+      "POST": {
+        "description": "Log a food item with calories and macronutrient values.",
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "foodName": { "type": "string" },
+            "calories": { "type": "integer", "minimum": 0 },
+            "protein": { "type": "number", "minimum": 0 },
+            "carbohydrates": { "type": "number", "minimum": 0 },
+            "fat": { "type": "number", "minimum": 0 }
+          },
+          "required": ["foodName", "calories", "protein", "carbohydrates", "fat"]
+        },
+        "responses": {
+          "201": {
+            "description": "Meal logged successfully.",
+            "content": {
+              "application/json": {
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "foodName": { "type": "string" },
+                  "calories": { "type": "integer" },
+                  "loggedAt": { "type": "string", "format": "date-time" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/nutrition/summary": {
+      "GET": {
+        "description": "Fetch daily nutritional aggregate totals vs active targets. Clients read their own; coaches query linked client targets.",
+        "parameters": [
+          { "name": "client_id", "in": "query", "type": "string", "required": false },
+          { "name": "timezone", "in": "query", "type": "string", "required": true }
+        ],
+        "responses": {
+          "200": {
+            "type": "object",
+            "properties": {
+              "aggregates": {
+                "type": "object",
+                "properties": {
+                  "calories": { "type": "integer" },
+                  "protein": { "type": "number" },
+                  "carbohydrates": { "type": "number" },
+                  "fat": { "type": "number" }
+                }
+              },
+              "targets": {
+                "type": "object",
+                "properties": {
+                  "calories": { "type": "integer" },
+                  "protein": { "type": "integer" },
+                  "carbohydrates": { "type": "integer" },
+                  "fat": { "type": "integer" }
+                },
+                "nullable": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/nutrition/targets": {
+      "POST": {
+        "description": "Coach proposes a daily calorie/macronutrient target adjustment for an associated client.",
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "clientId": { "type": "string", "format": "uuid" },
+            "proposedChanges": {
+              "type": "object",
+              "properties": {
+                "action": { "type": "string", "const": "ADJUST_NUTRITION_TARGETS" },
+                "targetCalories": { "type": "integer", "minimum": 500 },
+                "targetProtein": { "type": "integer", "minimum": 20 },
+                "targetCarbs": { "type": "integer", "minimum": 20 },
+                "targetFat": { "type": "integer", "minimum": 10 }
+              },
+              "required": ["action", "targetCalories", "targetProtein", "targetCarbs", "targetFat"]
+            }
+          },
+          "required": ["clientId", "proposedChanges"]
+        },
+        "responses": {
+          "201": {
+            "description": "Recommendation created and staged in Approvals Hub.",
+            "content": {
+              "application/json": {
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "status": { "type": "string", "const": "PENDING_APPROVAL" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

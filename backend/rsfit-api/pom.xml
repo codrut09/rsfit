@@ -20,6 +20,10 @@
             <artifactId>rsfit-workouts</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.rsfit</groupId>
+            <artifactId>rsfit-nutrition</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

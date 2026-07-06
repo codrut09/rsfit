@@ -32,6 +32,32 @@ export default function ApprovalsHubScreen() {
     }
   };
 
+  const renderProposedChanges = (changesStr) => {
+    try {
+      const changes = typeof changesStr === 'string' ? JSON.parse(changesStr) : changesStr;
+      if (changes.action === 'ADJUST_NUTRITION_TARGETS') {
+        return (
+          <View style={styles.changesBox}>
+            <Text style={styles.boldText}>Target Adjustments Proposed:</Text>
+            <Text>Calories: {changes.targetCalories} kcal</Text>
+            <Text>Protein: {changes.targetProtein}g | Carbs: {changes.targetCarbs}g | Fat: {changes.targetFat}g</Text>
+          </View>
+        );
+      }
+      if (changes.action === 'ADJUST_SETS_REPS') {
+        return (
+          <View style={styles.changesBox}>
+            <Text style={styles.boldText}>Modify Exercise: {changes.targetExercise}</Text>
+            <Text>Sets: {changes.targetSets} | Reps: {changes.targetReps} | Weight: {changes.targetWeight} kg</Text>
+          </View>
+        );
+      }
+      return <Text>{JSON.stringify(changes)}</Text>;
+    } catch (e) {
+      return <Text>Proposed: {changesStr}</Text>;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Approvals Hub</Text>
@@ -45,7 +71,9 @@ export default function ApprovalsHubScreen() {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <Text style={styles.cardCoach}>Coach: {item.coachId}</Text>
-              <Text style={styles.cardChanges}>Proposed: {item.proposedChanges}</Text>
+              <View style={{ marginVertical: 10 }}>
+                {renderProposedChanges(item.proposedChanges)}
+              </View>
               <View style={styles.buttonRow}>
                 <TouchableOpacity 
                   style={[styles.btn, { backgroundColor: 'green' }]} 
@@ -74,8 +102,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   card: { padding: 15, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', marginBottom: 15, backgroundColor: '#fff' },
   cardCoach: { fontSize: 16, fontWeight: '600' },
-  cardChanges: { fontSize: 14, color: '#555', marginVertical: 10 },
-  buttonRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  changesBox: { padding: 10, backgroundColor: '#f9f9f9', borderRadius: 6, marginVertical: 5 },
+  boldText: { fontWeight: 'bold', marginBottom: 5 },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
   btn: { flex: 1, padding: 10, borderRadius: 6, alignItems: 'center', marginHorizontal: 5 },
   btnText: { color: '#fff', fontWeight: 'bold' },
   empty: { textAlign: 'center', marginTop: 20, color: '#999', fontSize: 16 }

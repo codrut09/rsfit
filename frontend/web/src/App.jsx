@@ -69,9 +69,11 @@ export default function App() {
       <div className="auth-wrapper">
         <div className="auth-card">
           <div className="auth-header">
-            <h1 className="brand-title" style={{ fontSize: '32px', marginBottom: '10px' }}>RSFIT</h1>
-            <h2 className="auth-title">{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
-            <p className="auth-subtitle">{isRegister ? 'Register as a professional gym coach' : 'Sign in to access coach dash'}</p>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
+              <div className="sidebar-logo">F</div>
+            </div>
+            <h1 className="brand-title" style={{ fontSize: '28px', marginBottom: '10px' }}>RSFIT CONSOLE</h1>
+            <p className="auth-subtitle">{isRegister ? 'Register as a professional gym coach' : 'Sign in to access your Extej SaaS dashboard'}</p>
           </div>
 
           <form onSubmit={isRegister ? handleRegister : handleLogin}>
@@ -132,6 +134,7 @@ export default function App() {
       {/* Sidebar Navigation */}
       <div className="sidebar">
         <div className="sidebar-header">
+          <div className="sidebar-logo">F</div>
           <h1 className="brand-title">RSFIT CONSOLE</h1>
         </div>
         <ul className="sidebar-menu">
@@ -148,11 +151,11 @@ export default function App() {
             Propose Targets
           </li>
         </ul>
-        <div style={{ padding: '24px', borderTop: '1px solid var(--border-color)' }}>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '10px', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-            Logged in as:<br/><strong style={{ color: 'var(--text-main)' }}>{username}</strong>
+        <div className="sidebar-footer">
+          <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '12px', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            Active Coach:<br/><strong style={{ color: 'var(--text-main)' }}>{username}</strong>
           </p>
-          <button onClick={handleLogout} className="btn-primary" style={{ background: 'var(--accent-red)', padding: '8px' }}>
+          <button onClick={handleLogout} className="btn-primary" style={{ background: 'var(--accent-red)', padding: '10px', boxShadow: 'none' }}>
             Sign Out
           </button>
         </div>
@@ -162,40 +165,62 @@ export default function App() {
       <div className="main-content">
         {activeTab === 'dashboard' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+            <div className="header-row">
               <div>
-                <h1 style={{ fontSize: '32px', fontWeight: '700', letterSpacing: '-0.5px' }}>Dashboard Overview</h1>
-                <p style={{ color: 'var(--text-muted)' }}>Monitor your active gym clients metrics.</p>
+                <h1 className="page-title">Dashboard Overview</h1>
+                <p className="page-subtitle">Inspect client logs and approve target suggestions.</p>
               </div>
             </div>
 
-            <div className="card-panel">
-              <CoachDashboard />
+            {/* Glowing Widget Cards */}
+            <div className="dashboard-grid">
+              <div className="stat-widget">
+                <div className="widget-label">Total Clients</div>
+                <div className="widget-value">3 Active</div>
+                <div className="widget-trend trend-up">↑ +12% this week</div>
+              </div>
+              <div className="stat-widget">
+                <div className="widget-label">Daily Workout Sessions</div>
+                <div className="widget-value">8 Logs</div>
+                <div className="widget-trend trend-up" style={{ color: 'var(--accent-purple)' }}>↑ +5% completed</div>
+              </div>
+              <div className="stat-widget">
+                <div className="widget-label">Target Modifications</div>
+                <div className="widget-value">2 Staged</div>
+                <div className="widget-trend" style={{ color: 'var(--accent-blue)' }}>● Pending Approvals Hub</div>
+              </div>
             </div>
 
-            <div className="card-panel">
-              <h3 style={{ marginBottom: '15px' }}>Select Client to Inspect</h3>
-              <input 
-                type="text" 
-                placeholder="Paste Client UUID here" 
-                value={selectedClientId} 
-                onChange={e => setSelectedClientId(e.target.value)}
-                className="form-control"
-                style={{ maxWidth: '400px', marginBottom: '15px' }}
-              />
-              {selectedClientId ? (
-                <ClientBriefingCard clientId={selectedClientId} />
-              ) : (
-                <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Please enter a Client UUID to fetch RAG Daily Reports.</p>
-              )}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
+              <div className="glass-panel">
+                <h3 style={{ marginBottom: '20px', fontWeight: '600' }}>Active Associations</h3>
+                <CoachDashboard />
+              </div>
+
+              <div className="glass-panel">
+                <h3 style={{ marginBottom: '15px', fontWeight: '600' }}>RAG Daily Inspector</h3>
+                <input 
+                  type="text" 
+                  placeholder="Paste Client UUID here" 
+                  value={selectedClientId} 
+                  onChange={e => setSelectedClientId(e.target.value)}
+                  className="form-control"
+                  style={{ marginBottom: '15px' }}
+                />
+                {selectedClientId ? (
+                  <ClientBriefingCard clientId={selectedClientId} />
+                ) : (
+                  <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '14px' }}>Provide a client UUID to run LLM summary analysis.</p>
+                )}
+              </div>
             </div>
           </div>
         )}
 
         {activeTab === 'roster' && (
           <div>
-            <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '30px' }}>Roster Management</h1>
-            <div className="card-panel">
+            <h1 className="page-title" style={{ marginBottom: '30px' }}>Roster Management</h1>
+            <div className="glass-panel">
               <ClientRosterPage />
             </div>
           </div>
@@ -203,21 +228,23 @@ export default function App() {
 
         {activeTab === 'workout-mod' && (
           <div>
-            <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '30px' }}>Propose Workout Modifications</h1>
-            <div className="card-panel">
-              <label className="form-label">Client ID UUID</label>
-              <input 
-                type="text" 
-                placeholder="Client UUID" 
-                value={selectedClientId}
-                onChange={e => setSelectedClientId(e.target.value)}
-                className="form-control"
-                style={{ maxWidth: '400px', marginBottom: '20px' }}
-              />
+            <h1 className="page-title" style={{ marginBottom: '30px' }}>Propose Workout Modifications</h1>
+            <div className="glass-panel">
+              <div className="form-group">
+                <label className="form-label">Client ID UUID</label>
+                <input 
+                  type="text" 
+                  placeholder="Paste Client UUID" 
+                  value={selectedClientId}
+                  onChange={e => setSelectedClientId(e.target.value)}
+                  className="form-control"
+                  style={{ maxWidth: '440px' }}
+                />
+              </div>
               {selectedClientId ? (
                 <RecommendModificationForm clientId={selectedClientId} />
               ) : (
-                <p style={{ color: 'var(--text-muted)' }}>Provide a client UUID above to recommend exercises set edits.</p>
+                <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Please specify a client UUID first.</p>
               )}
             </div>
           </div>
@@ -225,21 +252,23 @@ export default function App() {
 
         {activeTab === 'nutrition-mod' && (
           <div>
-            <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '30px' }}>Propose Calorie & Macro Targets</h1>
-            <div className="card-panel">
-              <label className="form-label">Client ID UUID</label>
-              <input 
-                type="text" 
-                placeholder="Client UUID" 
-                value={selectedClientId}
-                onChange={e => setSelectedClientId(e.target.value)}
-                className="form-control"
-                style={{ maxWidth: '400px', marginBottom: '20px' }}
-              />
+            <h1 className="page-title" style={{ marginBottom: '30px' }}>Propose Calorie & Macro Targets</h1>
+            <div className="glass-panel">
+              <div className="form-group">
+                <label className="form-label">Client ID UUID</label>
+                <input 
+                  type="text" 
+                  placeholder="Paste Client UUID" 
+                  value={selectedClientId}
+                  onChange={e => setSelectedClientId(e.target.value)}
+                  className="form-control"
+                  style={{ maxWidth: '440px' }}
+                />
+              </div>
               {selectedClientId ? (
                 <RecommendTargetsForm clientId={selectedClientId} />
               ) : (
-                <p style={{ color: 'var(--text-muted)' }}>Provide a client UUID above to propose new calorie macro goals.</p>
+                <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Please specify a client UUID first.</p>
               )}
             </div>
           </div>

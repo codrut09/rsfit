@@ -30,41 +30,57 @@ export default function ClientRosterPage() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>My Clients Roster</h1>
+    <div>
+      <h2 style={{ marginBottom: '20px', fontWeight: '600' }}>Active Clients & Associations</h2>
       
-      <form onSubmit={handleInvite} style={{ marginBottom: '20px' }}>
+      <form onSubmit={handleInvite} style={{ display: 'flex', gap: '15px', marginBottom: '30px', maxWidth: '500px' }}>
         <input 
           type="email" 
-          placeholder="Client Email" 
+          placeholder="Enter Client Email Address" 
           value={inviteEmail} 
           onChange={e => setInviteEmail(e.target.value)} 
           required 
-          style={{ padding: '8px', marginRight: '10px' }}
+          className="form-control"
+          style={{ flex: 1 }}
         />
-        <button type="submit" style={{ padding: '8px 12px' }}>Invite Client</button>
+        <button type="submit" className="btn-primary" style={{ width: 'auto', padding: '12px 24px' }}>Invite Client</button>
       </form>
       
-      {message ? <p>{message}</p> : null}
+      {message ? (
+        <p style={{ color: 'var(--accent-purple)', fontWeight: '600', marginBottom: '20px' }}>{message}</p>
+      ) : null}
       
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Client ID</th>
-            <th>Status</th>
-            <th>Established</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clients.map(rel => (
-            <tr key={`${rel.coachId}-${rel.clientId}`}>
-              <td>{rel.clientId}</td>
-              <td>{rel.status}</td>
-              <td>{new Date(rel.createdAt).toLocaleDateString()}</td>
+      <div className="table-container">
+        <table className="custom-table">
+          <thead>
+            <tr>
+              <th>Client ID UUID</th>
+              <th>Status</th>
+              <th>Date Established</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {clients.map(rel => (
+              <tr key={`${rel.coachId}-${rel.clientId}`}>
+                <td style={{ fontFamily: 'monospace' }}>{rel.clientId}</td>
+                <td>
+                  <span className={`badge ${rel.status === 'ACTIVE' ? 'badge-active' : 'badge-pending'}`}>
+                    {rel.status}
+                  </span>
+                </td>
+                <td>{new Date(rel.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+            {clients.length === 0 && (
+              <tr>
+                <td colSpan="3" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>
+                  No clients associated yet. Send invites above to connect!
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

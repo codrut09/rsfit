@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ApprovalsAPI",
+  "description": "Coach recommendation submissions and Client approvals hub actions.",
+  "endpoints": {
+    "/api/approvals/recommendations": {
+      "POST": {
+        "description": "Coach proposes workout changes to a client's plan template, active log, or past log.",
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "clientId": { "type": "string", "format": "uuid" },
+            "planId": { "type": "string", "format": "uuid", "nullable": true },
+            "logId": { "type": "string", "format": "uuid", "nullable": true },
+            "proposedChanges": {
+              "type": "object",
+              "properties": {
+                "action": { "type": "string", "enum": ["ADD_EXERCISE", "REMOVE_EXERCISE", "ADJUST_SETS_REPS"] },
+                "targetExercise": { "type": "string" },
+                "targetSets": { "type": "integer" },
+                "targetReps": { "type": "integer" },
+                "targetWeight": { "type": "number" }
+              },
+              "required": ["action", "targetExercise"]
+            }
+          },
+          "required": ["clientId", "proposedChanges"]
+        },
+        "responses": {
+          "201": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "status": { "type": "string", "const": "PENDING_APPROVAL" }
+            }
+          },
+          "403": { "description": "Coach does not have an active relationship with this client." }
+        }
+      }
+    },
+    "/api/approvals/pending": {
+      "GET": {
+        "description": "List all pending recommendations for the authenticated client.",
+        "responses": {
+          "200": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "format": "uuid" },
+                "coachName": { "type": "string" },
+                "planId": { "type": "string", "nullable": true },
+                "logId": { "type": "string", "nullable": true },
+                "proposedChanges": { "type": "object" },
+                "createdAt": { "type": "string", "format": "date-time" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/approvals/recommendations/{id}/action": {
+      "POST": {
+        "description": "Client approves or rejects the pending recommendation.",
+        "parameters": [
+          { "name": "id", "in": "path", "type": "string", "required": true }
+        ],
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "action": { "type": "string", "enum": ["APPROVE", "REJECT"] }
+          },
+          "required": ["action"]
+        },
+        "responses": {
+          "200": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "status": { "type": "string", "enum": ["APPROVED", "REJECTED"] }
+            }
+          },
+          "400": { "description": "Recommendation already processed or invalid state change." }
+        }
+      }
+    }
+  }
+}

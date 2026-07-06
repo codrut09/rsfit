@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorkoutsAPI",
+  "description": "Workout plan management and gym-floor log tracking contracts.",
+  "endpoints": {
+    "/api/workouts/plans": {
+      "GET": {
+        "description": "Fetch active templates for the client. Coaches query this for associated clients.",
+        "parameters": [
+          { "name": "client_id", "in": "query", "type": "string", "required": false }
+        ],
+        "responses": {
+          "200": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "format": "uuid" },
+                "name": { "type": "string" },
+                "isActive": { "type": "boolean" },
+                "exercises": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "exerciseName": { "type": "string" },
+                      "targetSets": { "type": "integer" },
+                      "targetReps": { "type": "integer" },
+                      "targetWeight": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "POST": {
+        "description": "Create a new workout plan template (client creates for self, or coach for associated client).",
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "clientId": { "type": "string", "format": "uuid" },
+            "name": { "type": "string" },
+            "exercises": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "exerciseName": { "type": "string" },
+                  "targetSets": { "type": "integer" },
+                  "targetReps": { "type": "integer" },
+                  "targetWeight": { "type": "number" }
+                },
+                "required": ["exerciseName", "targetSets", "targetReps"]
+              }
+            }
+          },
+          "required": ["clientId", "name", "exercises"]
+        },
+        "responses": {
+          "201": { "description": "Template created successfully." }
+        }
+      }
+    },
+    "/api/workouts/logs": {
+      "POST": {
+        "description": "Start a new active workout session.",
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "planId": { "type": "string", "format": "uuid", "nullable": true },
+            "name": { "type": "string" }
+          },
+          "required": ["name"]
+        },
+        "responses": {
+          "201": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "name": { "type": "string" },
+              "status": { "type": "string", "const": "IN_PROGRESS" },
+              "startTime": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    },
+    "/api/workouts/logs/{id}/sets": {
+      "PUT": {
+        "description": "Upsert logged set entries into an in-progress log.",
+        "parameters": [
+          { "name": "id", "in": "path", "type": "string", "required": true }
+        ],
+        "requestBody": {
+          "type": "object",
+          "properties": {
+            "exerciseName": { "type": "string" },
+            "sets": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "setIndex": { "type": "integer" },
+                  "reps": { "type": "integer" },
+                  "weight": { "type": "number" },
+                  "completed": { "type": "boolean" }
+                },
+                "required": ["setIndex", "reps", "weight"]
+              }
+            }
+          },
+          "required": ["exerciseName", "sets"]
+        },
+        "responses": {
+          "200": { "description": "Sets logged successfully." }
+        }
+      }
+    },
+    "/api/workouts/logs/{id}/finish": {
+      "POST": {
+        "description": "Mark a running workout log as completed.",
+        "parameters": [
+          { "name": "id", "in": "path", "type": "string", "required": true }
+        ],
+        "responses": {
+          "200": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "status": { "type": "string", "const": "COMPLETED" },
+              "endTime": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
